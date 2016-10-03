@@ -1,36 +1,46 @@
 ##
-## Makefile for  in /Users/Saursinet/danone
+## Makefile for Makefile in /Users/wilmot_g/Epitech/Crypto/Pamela
 ##
-## Made by Florian Saurs
-## Login   <Saursinet@epitech.net>
+## Made by Nyrandone Noboud-Inpeng
+## Login   <noboud_n@epitech.net>
 ##
-## Started on  Mon Sep 19 18:38:47 2016 Florian Saurs
-## Last update Mon Sep 19 18:38:49 2016 Florian Saurs
+## Started on  Mon Oct 12 17:58:00 2016 Nyrandone Noboud-Inpeng
+## Last update Mon Oct 21 23:48:44 2016 guillaume wilmot
 ##
 
-CC = g++
+SRC	= Pamela.cpp
 
-CXXFLAGS = -std=c++11
+OBJ	= $(addprefix $(OBJDIR), $(SRC:.cpp=.o))
 
-LDFLAGS = -lpam
+RM	= rm -f
 
-rm = rm -f
+CXX	= g++ -std=c++11
 
-SRCS = pamela.cpp
+NAME	= pamtest
 
-OBJS = $(SRCS:.cpp=.o)
+OBJDIR	= obj/
+SRCDIR	= src/
+INCDIR	= -I inc/
 
-NAME = pamela
+MAKEOBJ	= obj
 
-$(NAME): $(OBJS)
-		$(CC) $(OBJS) -o $(NAME) $(LDFLAGS)
+LDFLAGS 	+= -lpam
+CXXFLAGS	+= -W -Wall -Wextra -Werror
 
-all: $(NAME)
+all:
+	@make --no-print-directory $(NAME)
+
+$(OBJDIR)%.o: $(SRCDIR)%.cpp
+	@mkdir -p $(MAKEOBJ)
+	$(CXX) $(CXXFLAGS) $(INCDIR) -o $@ -c $<
+
+$(NAME): $(OBJ)
+	$(CXX) -o $(NAME) $(OBJ) $(LDFLAGS)
 
 clean:
-		$(RM) $(OBJS)
+	$(RM) $(OBJ)
 
 fclean: clean
-		$(RM) $(NAME)
+	$(RM) $(NAME)
 
 re: fclean all
