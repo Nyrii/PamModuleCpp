@@ -7,7 +7,7 @@ elif [ "$EUID" -ne 0 ]; then
 else
     if [ $# -eq 1 ] && [ $1 == "update" ]; then
 	echo "# Pamela\n" >> /etc/pam.d/login
-	echo "session    optionnal   pam_ela.so\n" >> /etc/pam.d/login
+	echo "session    optional   pam_ela.so\n" >> /etc/pam.d/login
 	echo "Updated conf /etc/pam.d/login"
     fi
     cp pam_ela.so /lib/*/security
