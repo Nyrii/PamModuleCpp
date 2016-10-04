@@ -5,10 +5,11 @@
 ## Login   <noboud_n@epitech.net>
 ##
 ## Started on  Mon Oct 12 17:58:00 2016 Nyrandone Noboud-Inpeng
-## Last update Mon Oct 21 23:48:44 2016 guillaume wilmot
+## Last update Tue Oct  4 14:59:50 2016 Nyrandone Noboud-Inpeng
 ##
 
-SRC	= Pamela.cpp	\
+SRC	= Container.cpp	\
+	  Pamela.cpp	\
 	  Session.cpp
 
 MAIN	= Main.cpp
