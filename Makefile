@@ -20,7 +20,7 @@ RM	= rm -f
 
 CXX	= g++ -std=c++11
 
-NAME	= pamela.so
+NAME	= pam_ela.so
 TEST	= pamtest
 
 OBJDIR	= obj/
