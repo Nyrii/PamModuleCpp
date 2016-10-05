@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Tue Oct 04 13:25:41 2016 wilmot_g
-** Last update Wed Oct 05 15:57:13 2016 wilmot_g
+** Last update Wed Oct 05 17:10:15 2016 wilmot_g
 */
 
 #include <security/pam_appl.h>
@@ -21,7 +21,6 @@ public:
 
   int init(pam_handle_t *, int, int, const char **);
 private:
-    bool        _silent;
     string      _username;
     string      _container;
     string      _volume;

@@ -8,9 +8,10 @@
 ## Last update Tue Oct  4 14:59:50 2016 Nyrandone Noboud-Inpeng
 ##
 
-SRC += Container.cpp
+SRC	+= Container.cpp
+SRC	+= Logger.cpp
 SRC	+= Pamela.cpp
-SRC += Session.cpp
+SRC	+= Session.cpp
 
 MAIN	= Main.cpp
 
@@ -30,11 +31,8 @@ INCDIR	= -I inc/
 
 MAKEOBJ	= obj
 
-LDFLAGS 	+= -lpam -ldl
+LDFLAGS		+= -lpam -ldl
 CXXFLAGS	+= -W -Wall -Wextra -Werror -fpic -rdynamic -ansi -D_POSIX_SOURCE
-CXXFLAGS  += -Wwrite-strings -Wpointer-arith -Wcast-qual -Wcast-align
-CXXFLAGS  += -Winline -Wshadow -pedantic
-
 
 all:
 	@make --no-print-directory $(NAME)
