@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Mon Oct 03 21:19:49 2016 wilmot_g
-** Last update Wed Oct 05 15:52:44 2016 wilmot_g
+** Last update Wed Oct 05 16:15:01 2016 wilmot_g
 */
 
 #include <iostream>
@@ -20,7 +20,7 @@ PAM_EXTERN int		pam_sm_open_session(pam_handle_t *pamh, int flags, int ac, const
 
   cerr << "Open Session" << endl;
 
-  if (!pamh || session.init(pamh, flags, ac, av) == -1)
+  if (session.init(pamh, flags, ac, av) == -1)
     return (PAM_SESSION_ERR);
   return (PAM_SUCCESS);
 }

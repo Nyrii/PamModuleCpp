@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Tue Oct  4 15:26:05 2016 Nyrandone Noboud-Inpeng
-// Last update Tue Oct  4 15:30:12 2016 Nyrandone Noboud-Inpeng
+// Last update Tue Oct  4 15:49:09 2016 Nyrandone Noboud-Inpeng
 //
 
 #ifndef ERRORS_HPP_
@@ -31,8 +31,8 @@ protected:
 class			MemoryAllocError : public Error
 {
 public:
-  MemoryAllocError(std::string const &message = "An error occured.");
-  virtual		~MemoryAllocError() throw();
+  MemoryAllocError(std::string const &message = "An error occured.") { _message = message; };
+  virtual		~MemoryAllocError() throw() {};
 };
 
 #endif /* ERRORS_HPP_ */
