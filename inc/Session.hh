@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Tue Oct 04 13:25:41 2016 wilmot_g
-** Last update Wed Oct 05 18:28:15 2016 wilmot_g
+** Last update Wed Oct 05 19:46:21 2016 wilmot_g
 */
 
 #include <security/pam_appl.h>
@@ -20,6 +20,7 @@ public:
   ~Session();
 
   int init(pam_handle_t *);
+
 private:
     string      _username;
     string      _container;
