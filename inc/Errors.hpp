@@ -21,7 +21,7 @@ class			Error : public std::exception
 {
 public:
   Error() {};
-  ~Error() {};
+  ~Error() throw() {};
 
   virtual char const	*what() const throw() { return (_message.c_str()); };
 protected:
