@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Tue Oct 04 14:08:06 2016 wilmot_g
-** Last update Wed Oct 05 18:05:00 2016 wilmot_g
+** Last update Sat Oct  8 15:50:19 2016 Nyrandone Noboud-Inpeng
 */
 
 #include <security/pam_appl.h>
@@ -16,9 +16,9 @@
 #include "Session.hh"
 #include "Pamela.hh"
 #include "Errors.hpp"
-#include "Container.hpp"
+#include "Crypt.hpp"
 
-int			main(UNUSED int ac, UNUSED char **av) {
+int     log() {
   pam_handle_t    *pamh;
   pam_conv		    conv;
   struct passwd   *passwd;
@@ -29,11 +29,17 @@ int			main(UNUSED int ac, UNUSED char **av) {
   if ((ret = pam_start("vault", passwd->pw_name, &conv, &pamh)) == -1 || (ret = pam_authenticate(pamh, 0)) == -1 || (ret = pam_acct_mgmt(pamh, 0)) == -1)
     return (cerr << pam_strerror(pamh, ret) << endl, pam_end(pamh, ret), -1);
   pam_end(pamh, ret);
+  return (0);
+}
+
+int			main(UNUSED int ac, UNUSED char **av) {
+
+  // log();
 
   // Encryption / Decryption
-  Container cont;
+  Crypt crypter;
 
-  cont.init();
+  crypter.init();
 
   return (0);
 }
