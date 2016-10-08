@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Sat Oct  8 15:49:06 2016 Nyrandone Noboud-Inpeng
-// Last update Sat Oct  8 19:51:37 2016 Nyrandone Noboud-Inpeng
+// Last update Sat Oct  8 21:54:11 2016 Nyrandone Noboud-Inpeng
 //
 
 # include <openssl/rsa.h>
@@ -35,27 +35,11 @@ int Crypt::init()
 
   try {
     generateRSAKey();
+    generateAESKeyAndIV();
   } catch (Error &e){
     std::cerr << e.what() << std::endl;
     return (-1);
   }
-
-  // Init AES Key
-  if (!(_aesKey = new unsigned char[AES_KEYLEN / 8])
-      || !(_aesIV = new unsigned char[AES_KEYLEN / 8])
-      || !(_aesPass = new unsigned char[AES_KEYLEN / 8])
-      || !(_aesSalt = new unsigned char[8])) {
-    throw MemoryAllocError("Error : memory allocation failed.");
-  }
-
-  if (RAND_bytes(_aesPass, AES_KEYLEN / 8) <= 0 || RAND_bytes(_aesSalt, 8) <= 0) {
-    throw CryptError("Error : crypt error on putting pseudo-random bytes into buffers.");
-  }
-
-  if (EVP_BytesToKey(EVP_aes_128_cbc(), EVP_sha256(), _aesSalt, _aesPass, AES_KEYLEN/8, AES_ROUNDS, _aesKey, _aesIV) == 0) {
-    throw CryptError("Error : could not generate derivated AES key or AES IV.");
-  }
-
   return (0);
 }
 
@@ -71,8 +55,26 @@ int Crypt::generateRSAKey()
       || EVP_PKEY_keygen(ctx, &_localKeypair) <= 0) /* Generated key is written into localKeyPair */ {
     throw CryptError("Error : RSA init failed.");
   }
-
   EVP_PKEY_CTX_free(ctx);
+  return (0);
+}
+
+int Crypt::generateAESKeyAndIV()
+{
+  if (!(_aesKey = new unsigned char[AES_KEYLEN / 8])
+      || !(_aesIV = new unsigned char[AES_KEYLEN / 8])
+      || !(_aesPass = new unsigned char[AES_KEYLEN / 8])
+      || !(_aesSalt = new unsigned char[8])) {
+    throw MemoryAllocError("Error : memory allocation failed.");
+  }
+  if (RAND_bytes(_aesPass, AES_KEYLEN / 8) <= 0 || RAND_bytes(_aesSalt, 8) <= 0) {
+    throw CryptError("Error : crypt error on putting pseudo-random bytes into buffers.");
+  }
+  if (EVP_BytesToKey(EVP_aes_128_cbc(), EVP_sha256(), _aesSalt, _aesPass, AES_KEYLEN / 8, AES_ROUNDS, _aesKey, _aesIV) == 0) {
+    throw CryptError("Error : could not generate derivated AES key or AES IV.");
+  }
+  free(_aesPass);
+  free(_aesSalt);
   return (0);
 }
 

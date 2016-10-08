@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Sat Oct  8 15:48:30 2016 Nyrandone Noboud-Inpeng
-// Last update Sat Oct  8 19:41:28 2016 Nyrandone Noboud-Inpeng
+// Last update Sat Oct  8 21:53:50 2016 Nyrandone Noboud-Inpeng
 //
 
 #ifndef CRYPT_HPP_
@@ -46,6 +46,7 @@ class Crypt {
 
     int init();
     int generateRSAKey();
+    int generateAESKeyAndIV();
     int encrypt();
     int decrypt();
 
