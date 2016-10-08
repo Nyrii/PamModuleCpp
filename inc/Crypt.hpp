@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Sat Oct  8 15:48:30 2016 Nyrandone Noboud-Inpeng
-// Last update Sat Oct  8 15:48:51 2016 Nyrandone Noboud-Inpeng
+// Last update Sat Oct  8 16:25:56 2016 Nyrandone Noboud-Inpeng
 //
 
 #ifndef CRYPT_HPP_
@@ -16,6 +16,7 @@
 # include <openssl/rsa.h>
 
 # define RSA_KEYLEN 2048
+# define AES_KEYLEN 128
 
 class Crypt {
 
@@ -34,7 +35,12 @@ class Crypt {
       _aesIV = NULL;
     };
 
-    ~Crypt() {};
+    ~Crypt() {
+      _rsaEncryptCtx != NULL ? delete[] _rsaEncryptCtx : static_cast<void>(0);
+      _aesEncryptCtx != NULL ? delete[] _aesEncryptCtx : static_cast<void>(0);
+      _rsaDecryptCtx != NULL ? delete[] _rsaDecryptCtx : static_cast<void>(0);
+      _aesDecryptCtx != NULL ? delete[] _aesDecryptCtx : static_cast<void>(0);
+    };
 
     int init();
     int encrypt();

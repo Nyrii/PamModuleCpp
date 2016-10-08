@@ -5,7 +5,7 @@
 ## Login   <noboud_n@epitech.net>
 ##
 ## Started on  Mon Oct 12 17:58:00 2016 Nyrandone Noboud-Inpeng
-## Last update Sat Oct  8 15:49:37 2016 Nyrandone Noboud-Inpeng
+## Last update Sat Oct  8 16:17:48 2016 Nyrandone Noboud-Inpeng
 ##
 
 SRC	+= Crypt.cpp
@@ -20,7 +20,7 @@ OBJMAIN	= $(addprefix $(OBJDIR), $(MAIN:.cpp=.o))
 
 RM	= rm -f
 
-CXX	= g++ -std=c++11
+CXX	= g++ -std=c++11 -g
 
 NAME	= pam_ela.so
 TEST	= pamtest
