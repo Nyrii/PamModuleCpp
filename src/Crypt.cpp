@@ -5,9 +5,11 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Sat Oct  8 15:49:06 2016 Nyrandone Noboud-Inpeng
-// Last update Sat Oct  8 16:23:41 2016 Nyrandone Noboud-Inpeng
+// Last update Sat Oct  8 19:51:37 2016 Nyrandone Noboud-Inpeng
 //
 
+# include <openssl/rsa.h>
+# include <openssl/rand.h>
 #include "Crypt.hpp"
 #include "Errors.hpp"
 
@@ -31,7 +33,34 @@ int Crypt::init()
   EVP_CIPHER_CTX_init(_rsaDecryptCtx);
   EVP_CIPHER_CTX_init(_aesDecryptCtx);
 
+  try {
+    generateRSAKey();
+  } catch (Error &e){
+    std::cerr << e.what() << std::endl;
+    return (-1);
+  }
 
+  // Init AES Key
+  if (!(_aesKey = new unsigned char[AES_KEYLEN / 8])
+      || !(_aesIV = new unsigned char[AES_KEYLEN / 8])
+      || !(_aesPass = new unsigned char[AES_KEYLEN / 8])
+      || !(_aesSalt = new unsigned char[8])) {
+    throw MemoryAllocError("Error : memory allocation failed.");
+  }
+
+  if (RAND_bytes(_aesPass, AES_KEYLEN / 8) <= 0 || RAND_bytes(_aesSalt, 8) <= 0) {
+    throw CryptError("Error : crypt error on putting pseudo-random bytes into buffers.");
+  }
+
+  if (EVP_BytesToKey(EVP_aes_128_cbc(), EVP_sha256(), _aesSalt, _aesPass, AES_KEYLEN/8, AES_ROUNDS, _aesKey, _aesIV) == 0) {
+    throw CryptError("Error : could not generate derivated AES key or AES IV.");
+  }
+
+  return (0);
+}
+
+int Crypt::generateRSAKey()
+{
   // Generate a 2048 bit RSA key
   // Allocates public key algorithm context using the algorithm specified by id.
   EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
@@ -44,15 +73,6 @@ int Crypt::init()
   }
 
   EVP_PKEY_CTX_free(ctx);
-
-
-  // Init AES Key
-  _aesKey = new unsigned char[sizeof(AES_KEYLEN / 8)];
-  _aesIV = new unsigned char[sizeof(AES_KEYLEN / 8)];
-
-
-  (void)ctx;
-
   return (0);
 }
 

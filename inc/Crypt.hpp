@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Sat Oct  8 15:48:30 2016 Nyrandone Noboud-Inpeng
-// Last update Sat Oct  8 16:25:56 2016 Nyrandone Noboud-Inpeng
+// Last update Sat Oct  8 19:41:28 2016 Nyrandone Noboud-Inpeng
 //
 
 #ifndef CRYPT_HPP_
@@ -13,10 +13,10 @@
 
 # include <openssl/sha.h>
 # include <openssl/evp.h>
-# include <openssl/rsa.h>
 
 # define RSA_KEYLEN 2048
 # define AES_KEYLEN 128
+# define AES_ROUNDS 10
 
 class Crypt {
 
@@ -33,6 +33,8 @@ class Crypt {
 
       _aesKey = NULL;
       _aesIV = NULL;
+      _aesPass = NULL;
+      _aesSalt = NULL;
     };
 
     ~Crypt() {
@@ -43,6 +45,7 @@ class Crypt {
     };
 
     int init();
+    int generateRSAKey();
     int encrypt();
     int decrypt();
 
@@ -58,6 +61,8 @@ class Crypt {
 
     unsigned char   *_aesKey;
     unsigned char   *_aesIV;
+    unsigned char   *_aesPass;
+    unsigned char   *_aesSalt;
 };
 
 #endif /* !CRYPT_HPP_ */
