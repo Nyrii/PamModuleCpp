@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Sat Oct  8 15:49:06 2016 Nyrandone Noboud-Inpeng
-// Last update Sat Oct  8 21:54:11 2016 Nyrandone Noboud-Inpeng
+// Last update Sat Oct  8 21:55:17 2016 Nyrandone Noboud-Inpeng
 //
 
 # include <openssl/rsa.h>
@@ -73,8 +73,6 @@ int Crypt::generateAESKeyAndIV()
   if (EVP_BytesToKey(EVP_aes_128_cbc(), EVP_sha256(), _aesSalt, _aesPass, AES_KEYLEN / 8, AES_ROUNDS, _aesKey, _aesIV) == 0) {
     throw CryptError("Error : could not generate derivated AES key or AES IV.");
   }
-  free(_aesPass);
-  free(_aesSalt);
   return (0);
 }
 
