@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Sat Oct  8 15:49:06 2016 Nyrandone Noboud-Inpeng
-// Last update Sun Oct  9 15:45:42 2016 Nyrandone Noboud-Inpeng
+// Last update Sun Oct  9 16:00:51 2016 Nyrandone Noboud-Inpeng
 //
 
 #include <openssl/rsa.h>
@@ -13,6 +13,7 @@
 #include <openssl/aes.h>
 #include <fstream>
 #include <vector>
+#include <cstring>
 #include "Crypt.hpp"
 #include "Errors.hpp"
 
@@ -105,16 +106,19 @@ int                 Crypt::AESEncrypt(UNUSED std::string file)
   if (fileContentSize == -1) {
     return (std::cerr << "The file " << file << " is currently empty." << std::endl, 0);
   }
-  if (!(fileEncryptedContent = new unsigned char[AES_BLOCK_SIZE + fileContentSize])) {
+  if (!(fileEncryptedContent = new unsigned char[AES_BLOCK_SIZE + fileContentSize + 1])) {
     throw MemoryAllocError("Error : could not allocate memory.");
+  }
+  if (!EVP_EncryptInit_ex(_aesEncryptCtx, EVP_aes_256_cbc(), NULL, _aesKey, _aesIV)) {
+    throw CryptError("Error : Initialization of the AES encryption context failed.");
   }
   ifs.open(file.c_str(), std::ifstream::ate | std::ifstream::binary);
   ifs.seekg(0, std::ifstream::beg);
   if (ifs.read(buffer.data(), fileContentSize)) {
-      if(!EVP_EncryptUpdate(_aesEncryptCtx, fileEncryptedContent, &bytesWritten, reinterpret_cast<unsigned char *>(buffer.data()), fileContentSize )) {
-        throw CryptError("Error : an update on the AES encryption failed.");
-      }
-      std::cout << bytesWritten << std::endl;
+    if (!EVP_EncryptUpdate(_aesEncryptCtx, fileEncryptedContent, &bytesWritten, reinterpret_cast<unsigned char *>(buffer.data()), fileContentSize)) {
+      throw CryptError("Error : an update on the AES encryption failed.");
+    }
+    std::cout << "File : " << file << ", content size : " << fileContentSize << ", bytes written : " << bytesWritten << std::endl;
   } else {
     return (std::cerr << "Error : could not read the content of the file " << file << std::endl, 0);
   }
