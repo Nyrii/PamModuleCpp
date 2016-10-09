@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Sat Oct  8 15:49:06 2016 Nyrandone Noboud-Inpeng
-// Last update Sun Oct  9 16:00:51 2016 Nyrandone Noboud-Inpeng
+// Last update Sun Oct  9 16:18:18 2016 Nyrandone Noboud-Inpeng
 //
 
 #include <openssl/rsa.h>
@@ -13,7 +13,6 @@
 #include <openssl/aes.h>
 #include <fstream>
 #include <vector>
-#include <cstring>
 #include "Crypt.hpp"
 #include "Errors.hpp"
 
@@ -99,9 +98,10 @@ int                 Crypt::AESEncrypt(UNUSED std::string file)
 {
   unsigned char     *fileEncryptedContent;
   int               bytesWritten = 0;
+  int               bytesOfDataEncrypted = 0;
   int               fileContentSize = getFileContentSize(file);
   std::ifstream     ifs;
-  std::vector<char> buffer(fileContentSize + 1);
+  std::vector<char> buffer(AES_BLOCK_SIZE + fileContentSize + 1);
 
   if (fileContentSize == -1) {
     return (std::cerr << "The file " << file << " is currently empty." << std::endl, 0);
@@ -118,11 +118,15 @@ int                 Crypt::AESEncrypt(UNUSED std::string file)
     if (!EVP_EncryptUpdate(_aesEncryptCtx, fileEncryptedContent, &bytesWritten, reinterpret_cast<unsigned char *>(buffer.data()), fileContentSize)) {
       throw CryptError("Error : an update on the AES encryption failed.");
     }
-    std::cout << "File : " << file << ", content size : " << fileContentSize << ", bytes written : " << bytesWritten << std::endl;
+    bytesOfDataEncrypted += bytesWritten;
+    std::cout << "After encrypt update -- file : " << file << ", content size : " << fileContentSize << ", bytes of data encrypted : " << bytesOfDataEncrypted << std::endl;
+    if (!EVP_EncryptFinal_ex(_aesEncryptCtx, reinterpret_cast<unsigned char *>(buffer.data()) + bytesOfDataEncrypted, &bytesWritten)) {
+      throw CryptError("Error : the AES encryption of the remaining data failed.");
+    }
+    std::cout << "After final encrypt -- file : " << file << ", content size : " << fileContentSize << ", bytes of data encrypted : " << bytesWritten << std::endl;
   } else {
     return (std::cerr << "Error : could not read the content of the file " << file << std::endl, 0);
   }
-
   EVP_CIPHER_CTX_cleanup(_aesEncryptCtx);
   delete[] fileEncryptedContent;
   ifs.close();
