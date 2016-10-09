@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Sat Oct  8 15:48:30 2016 Nyrandone Noboud-Inpeng
-// Last update Sat Oct  8 21:53:50 2016 Nyrandone Noboud-Inpeng
+// Last update Sun Oct  9 15:31:15 2016 Nyrandone Noboud-Inpeng
 //
 
 #ifndef CRYPT_HPP_
@@ -13,10 +13,12 @@
 
 # include <openssl/sha.h>
 # include <openssl/evp.h>
+# include <iostream>
+# include "Pamela.hh"
 
 # define RSA_KEYLEN 2048
-# define AES_KEYLEN 128
-# define AES_ROUNDS 10
+# define AES_KEYLEN 256
+# define AES_ITERATOR 10
 
 class Crypt {
 
@@ -44,11 +46,14 @@ class Crypt {
       _aesDecryptCtx != NULL ? delete[] _aesDecryptCtx : static_cast<void>(0);
     };
 
-    int init();
-    int generateRSAKey();
-    int generateAESKeyAndIV();
-    int encrypt();
-    int decrypt();
+    int             init();
+    int             generateRSAKey();
+    int             generateAESKeyAndIV();
+    int             RSAEncrypt();
+    int             RSADecrypt();
+    int             AESEncrypt(std::string);
+    int             AESDecrypt();
+    int             getFileContentSize(std::string);
 
   private:
     EVP_PKEY        *_localKeypair;

@@ -5,34 +5,32 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Sat Oct  8 15:49:06 2016 Nyrandone Noboud-Inpeng
-// Last update Sat Oct  8 21:55:17 2016 Nyrandone Noboud-Inpeng
+// Last update Sun Oct  9 15:45:42 2016 Nyrandone Noboud-Inpeng
 //
 
-# include <openssl/rsa.h>
-# include <openssl/rand.h>
+#include <openssl/rsa.h>
+#include <openssl/rand.h>
+#include <openssl/aes.h>
+#include <fstream>
+#include <vector>
 #include "Crypt.hpp"
 #include "Errors.hpp"
 
-int Crypt::init()
+int               Crypt::init()
 {
   _rsaEncryptCtx = new EVP_CIPHER_CTX[sizeof(EVP_CIPHER_CTX)];
   _aesEncryptCtx = new EVP_CIPHER_CTX[sizeof(EVP_CIPHER_CTX)];
-
   _rsaDecryptCtx = new EVP_CIPHER_CTX[sizeof(EVP_CIPHER_CTX)];
   _aesDecryptCtx = new EVP_CIPHER_CTX[sizeof(EVP_CIPHER_CTX)];
-
   if (_rsaEncryptCtx == NULL || _aesEncryptCtx == NULL
       || _rsaDecryptCtx == NULL || _aesDecryptCtx == NULL) {
     throw MemoryAllocError("Error : memory allocation failed.");
   }
-
-
   // Clears all informations from a cipher context and free up any allocated memory associate with it, except the ctx itself.
   EVP_CIPHER_CTX_init(_rsaEncryptCtx);
   EVP_CIPHER_CTX_init(_aesEncryptCtx);
   EVP_CIPHER_CTX_init(_rsaDecryptCtx);
   EVP_CIPHER_CTX_init(_aesDecryptCtx);
-
   try {
     generateRSAKey();
     generateAESKeyAndIV();
@@ -43,11 +41,11 @@ int Crypt::init()
   return (0);
 }
 
-int Crypt::generateRSAKey()
+int                 Crypt::generateRSAKey()
 {
   // Generate a 2048 bit RSA key
   // Allocates public key algorithm context using the algorithm specified by id.
-  EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
+  EVP_PKEY_CTX  *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
 
   if (ctx == NULL
       || EVP_PKEY_keygen_init(ctx) <= 0 /* Generate key */
@@ -59,7 +57,7 @@ int Crypt::generateRSAKey()
   return (0);
 }
 
-int Crypt::generateAESKeyAndIV()
+int                 Crypt::generateAESKeyAndIV()
 {
   if (!(_aesKey = new unsigned char[AES_KEYLEN / 8])
       || !(_aesIV = new unsigned char[AES_KEYLEN / 8])
@@ -70,18 +68,64 @@ int Crypt::generateAESKeyAndIV()
   if (RAND_bytes(_aesPass, AES_KEYLEN / 8) <= 0 || RAND_bytes(_aesSalt, 8) <= 0) {
     throw CryptError("Error : crypt error on putting pseudo-random bytes into buffers.");
   }
-  if (EVP_BytesToKey(EVP_aes_128_cbc(), EVP_sha256(), _aesSalt, _aesPass, AES_KEYLEN / 8, AES_ROUNDS, _aesKey, _aesIV) == 0) {
+  if (EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha256(), _aesSalt, _aesPass, AES_KEYLEN / 8, AES_ITERATOR, _aesKey, _aesIV) == 0) {
     throw CryptError("Error : could not generate derivated AES key or AES IV.");
   }
   return (0);
 }
 
-int Crypt::encrypt()
+int                 Crypt::getFileContentSize(std::string file) {
+  std::ifstream     ifs;
+  int               size;
+
+  ifs.open(file.c_str(), std::ifstream::in | std::ifstream::ate | std::ifstream::binary);
+  size = ifs.tellg();
+  ifs.close();
+  return (size);
+}
+
+int                 Crypt::RSAEncrypt()
 {
   return (0);
 }
 
-int Crypt::decrypt()
+int                 Crypt::RSADecrypt()
+{
+  return (0);
+}
+
+int                 Crypt::AESEncrypt(UNUSED std::string file)
+{
+  unsigned char     *fileEncryptedContent;
+  int               bytesWritten = 0;
+  int               fileContentSize = getFileContentSize(file);
+  std::ifstream     ifs;
+  std::vector<char> buffer(fileContentSize + 1);
+
+  if (fileContentSize == -1) {
+    return (std::cerr << "The file " << file << " is currently empty." << std::endl, 0);
+  }
+  if (!(fileEncryptedContent = new unsigned char[AES_BLOCK_SIZE + fileContentSize])) {
+    throw MemoryAllocError("Error : could not allocate memory.");
+  }
+  ifs.open(file.c_str(), std::ifstream::ate | std::ifstream::binary);
+  ifs.seekg(0, std::ifstream::beg);
+  if (ifs.read(buffer.data(), fileContentSize)) {
+      if(!EVP_EncryptUpdate(_aesEncryptCtx, fileEncryptedContent, &bytesWritten, reinterpret_cast<unsigned char *>(buffer.data()), fileContentSize )) {
+        throw CryptError("Error : an update on the AES encryption failed.");
+      }
+      std::cout << bytesWritten << std::endl;
+  } else {
+    return (std::cerr << "Error : could not read the content of the file " << file << std::endl, 0);
+  }
+
+  EVP_CIPHER_CTX_cleanup(_aesEncryptCtx);
+  delete[] fileEncryptedContent;
+  ifs.close();
+  return (0);
+}
+
+int Crypt::AESDecrypt()
 {
   return (0);
 }

@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Tue Oct 04 14:08:06 2016 wilmot_g
-** Last update Sat Oct  8 15:50:19 2016 Nyrandone Noboud-Inpeng
+** Last update Sun Oct  9 14:56:37 2016 Nyrandone Noboud-Inpeng
 */
 
 #include <security/pam_appl.h>
@@ -32,7 +32,7 @@ int     log() {
   return (0);
 }
 
-int			main(UNUSED int ac, UNUSED char **av) {
+int			main(UNUSED int ac, char **av) {
 
   // log();
 
@@ -40,6 +40,7 @@ int			main(UNUSED int ac, UNUSED char **av) {
   Crypt crypter;
 
   crypter.init();
+  crypter.AESEncrypt(av != NULL && av[1] ? av[1] : "tmp.txt");
 
   return (0);
 }
