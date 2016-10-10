@@ -40,7 +40,7 @@ int               Crypt::init()
   try {
     generateRSAKey();
     generateAESKeyAndIV();
-  } catch (Error &e){
+  } catch (Error &e) {
     std::cerr << e.what() << std::endl;
     return (-1);
   }
