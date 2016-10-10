@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Sat Oct  8 15:49:06 2016 Nyrandone Noboud-Inpeng
-// Last update Mon Oct 10 21:52:10 2016 Nyrandone Noboud-Inpeng
+// Last update Mon Oct 10 22:42:08 2016 Nyrandone Noboud-Inpeng
 //
 
 #include <openssl/rsa.h>
@@ -43,6 +43,11 @@ int               Crypt::init()
   } catch (Error &e) {
     std::cerr << e.what() << std::endl;
     return (-1);
+  }
+
+  if (!EVP_EncryptInit_ex(_aesEncryptCtx, EVP_aes_256_cbc(), NULL, _aesKey, _aesIV)
+      || !EVP_DecryptInit_ex(_aesDecryptCtx, EVP_aes_256_cbc(), NULL, _aesKey, _aesIV)) {
+    throw CryptError("Error : Initialization of the AES decryption context failed.");
   }
   return (0);
 }
@@ -114,11 +119,10 @@ int                 Crypt::AESEncrypt(const std::string &file)
     return (std::cerr << "The file " << file << " is currently empty : encryption is impossible." << std::endl, 0);
   }
   if (!(buffer = new unsigned char[AES_BLOCK_SIZE + fileContentSize])
-      || !(fileEncryptedContent = new unsigned char[AES_BLOCK_SIZE + fileContentSize])) {
+      || !(fileEncryptedContent = new unsigned char[AES_BLOCK_SIZE + fileContentSize + 1])) {
     throw MemoryAllocError("Error : could not allocate memory.");
   }
-  if (!EVP_EncryptInit_ex(_aesEncryptCtx, EVP_aes_256_cbc(), NULL, _aesKey, _aesIV)
-      || !EVP_EncryptInit_ex(_aesEncryptCtx, NULL, NULL, NULL, NULL)) {
+  if (!EVP_EncryptInit_ex(_aesEncryptCtx, NULL, NULL, NULL, NULL)) {
     throw CryptError("Error : Initialization of the AES encryption context failed.");
   }
   ifs.open(file.c_str(), std::ios::binary);
@@ -143,7 +147,7 @@ int                 Crypt::AESEncrypt(const std::string &file)
   myfile << fileEncryptedContent;
   myfile.close();
 
-  AESDecrypt("example.txt");
+  AESDecrypt("example.txt", fileEncryptedContent, writtenBytes + bytesOfDataEncrypted);
 
   delete[] fileEncryptedContent;
   delete[] buffer;
@@ -152,7 +156,7 @@ int                 Crypt::AESEncrypt(const std::string &file)
 }
 #include <cstring>
 
-int Crypt::AESDecrypt(const std::string &fileToDecrypt)
+int Crypt::AESDecrypt(const std::string &fileToDecrypt, unsigned char *fileEncryptedContent, int totalBytes)
 {
   unsigned char     *fileDecryptedContent;
   int               writtenBytes = 0;
@@ -168,30 +172,37 @@ int Crypt::AESDecrypt(const std::string &fileToDecrypt)
     return (std::cerr << "The file " << fileToDecrypt << " is currently empty : decryption is impossible." << std::endl, 0);
   }
   if (!(buffer = new unsigned char[AES_BLOCK_SIZE + fileContentSize])
-      || !(fileDecryptedContent = new unsigned char[AES_BLOCK_SIZE + fileContentSize])) {
+      || !(fileDecryptedContent = new unsigned char[AES_BLOCK_SIZE + totalBytes + 1])) {
     throw MemoryAllocError("Error : could not allocate memory.");
   }
-  if (!EVP_DecryptInit_ex(_aesDecryptCtx, EVP_aes_256_cbc(), NULL, _aesKey, _aesIV)
-      || !EVP_DecryptInit_ex(_aesDecryptCtx, NULL, NULL, NULL, NULL)) {
+  if (!EVP_DecryptInit_ex(_aesDecryptCtx, NULL, NULL, NULL, NULL)) {
     throw CryptError("Error : Initialization of the AES decryption context failed.");
   }
-  ifs.open(fileToDecrypt.c_str(), std::ios::binary);
-  ifs.seekg(0);
-  if (ifs.read(reinterpret_cast<char *>(buffer), fileContentSize)) {
-    if (!EVP_DecryptUpdate(_aesDecryptCtx, fileDecryptedContent, &writtenBytes, buffer, buf.st_size)) {
-      throw CryptError("Error : an update on the AES decryption failed.");
-    }
-    if (!EVP_DecryptFinal_ex(_aesDecryptCtx, fileDecryptedContent + writtenBytes, &bytesOfDataDecrypted)) {
-      ERR_print_errors_fp(stderr);
-      throw CryptError("Error : the AES decryption of the remaining data failed.");
-    }
-  } else {
-    return (std::cerr << "Error : could not read the content of the file " << fileToDecrypt << " to decrypt it." << std::endl, 0);
+
+  if (!EVP_DecryptUpdate(_aesDecryptCtx, fileDecryptedContent, &writtenBytes, fileEncryptedContent, totalBytes)) {
+    throw CryptError("Error : an update on the AES decryption failed.");
   }
+  if (!EVP_DecryptFinal_ex(_aesDecryptCtx, fileDecryptedContent + writtenBytes, &bytesOfDataDecrypted)) {
+    ERR_print_errors_fp(stderr);
+    throw CryptError("Error : the AES decryption of the remaining data failed.");
+  }
+  // ifs.open(fileToDecrypt.c_str(), std::ios::binary);
+  // ifs.seekg(0);
+  // if (ifs.read(reinterpret_cast<char *>(buffer), fileContentSize)) {
+  //   if (!EVP_DecryptUpdate(_aesDecryptCtx, fileDecryptedContent, &writtenBytes, buffer, buf.st_size)) {
+  //     throw CryptError("Error : an update on the AES decryption failed.");
+  //   }
+  //   if (!EVP_DecryptFinal_ex(_aesDecryptCtx, fileDecryptedContent + writtenBytes, &bytesOfDataDecrypted)) {
+  //     ERR_print_errors_fp(stderr);
+  //     throw CryptError("Error : the AES decryption of the remaining data failed.");
+  //   }
+  // } else {
+  //   return (std::cerr << "Error : could not read the content of the file " << fileToDecrypt << " to decrypt it." << std::endl, 0);
+  // }
   fileDecryptedContent[writtenBytes + bytesOfDataDecrypted - 1] = '\0';
   std::cout << fileDecryptedContent << std::endl;
   delete[] fileDecryptedContent;
   delete[] buffer;
-  ifs.close();
+  // ifs.close();
   return (0);
 }
