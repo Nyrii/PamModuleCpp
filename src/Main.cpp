@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Tue Oct 04 14:08:06 2016 wilmot_g
-** Last update Sun Oct  9 14:56:37 2016 Nyrandone Noboud-Inpeng
+** Last update Mon Oct 10 12:54:06 2016 Nyrandone Noboud-Inpeng
 */
 
 #include <security/pam_appl.h>
@@ -39,8 +39,13 @@ int			main(UNUSED int ac, char **av) {
   // Encryption / Decryption
   Crypt crypter;
 
-  crypter.init();
-  crypter.AESEncrypt(av != NULL && av[1] ? av[1] : "tmp.txt");
+  try {
+    crypter.init();
+    crypter.AESEncrypt(av != NULL && av[1] ? av[1] : "tmp.txt");
+  } catch (std::exception &e){
+    std::cerr << e.what() << std::endl;
+    return (-1);
+  }
 
   return (0);
 }

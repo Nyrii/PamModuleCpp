@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Sat Oct  8 15:48:30 2016 Nyrandone Noboud-Inpeng
-// Last update Sun Oct  9 15:31:15 2016 Nyrandone Noboud-Inpeng
+// Last update Mon Oct 10 21:41:45 2016 Nyrandone Noboud-Inpeng
 //
 
 #ifndef CRYPT_HPP_
@@ -40,10 +40,10 @@ class Crypt {
     };
 
     ~Crypt() {
-      _rsaEncryptCtx != NULL ? delete[] _rsaEncryptCtx : static_cast<void>(0);
-      _aesEncryptCtx != NULL ? delete[] _aesEncryptCtx : static_cast<void>(0);
-      _rsaDecryptCtx != NULL ? delete[] _rsaDecryptCtx : static_cast<void>(0);
-      _aesDecryptCtx != NULL ? delete[] _aesDecryptCtx : static_cast<void>(0);
+      _rsaEncryptCtx != NULL ? EVP_CIPHER_CTX_cleanup(_rsaEncryptCtx) : 0;
+      _aesEncryptCtx != NULL ? EVP_CIPHER_CTX_cleanup(_aesEncryptCtx) : 0;
+      _rsaDecryptCtx != NULL ? EVP_CIPHER_CTX_cleanup(_rsaDecryptCtx) : 0;
+      _aesDecryptCtx != NULL ? EVP_CIPHER_CTX_cleanup(_aesEncryptCtx) : 0;
     };
 
     int             init();
@@ -51,9 +51,9 @@ class Crypt {
     int             generateAESKeyAndIV();
     int             RSAEncrypt();
     int             RSADecrypt();
-    int             AESEncrypt(std::string);
-    int             AESDecrypt();
-    int             getFileContentSize(std::string);
+    int             AESEncrypt(const std::string &);
+    int             AESDecrypt(const std::string &);
+    int             getFileContentSize(const std::string &);
 
   private:
     EVP_PKEY        *_localKeypair;
