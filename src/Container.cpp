@@ -10,10 +10,14 @@
 
 #include <sys/stat.h>
 #include <sys/mount.h>
+#include <sys/ioctl.h>
+#include <linux/loop.h>
 #include <pwd.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdio.h>
+#include <fcntl.h>
 #include "Container.hpp"
 #include "Logger.hpp"
 
@@ -21,22 +25,37 @@ Container::Container() {}
 Container::~Container() {}
 
 int           Container::makeDir() {
-  struct stat st;
-
-  memset(&st, 0, sizeof(st));
-  if (stat(_mountPoint.c_str(), &st) == 0)
-    return (Logger::get() << Logger::DEBUG << "MountPoint " << "\"" << _mountPoint << "\"" << " already exists" << Logger::endl(), 0);
+  if (access(_mountPoint.c_str(), R_OK) == 0)
+    return (Logger::get() << Logger::DEBUG << "MountPoint already exists" << Logger::endl(), 0);
   if (mkdir(_mountPoint.c_str(), (S_IRWXU | S_IXGRP | S_IXOTH)) == 0)
-    return (Logger::get() << Logger::SUCCESS << "Successfully created MountPoint " << "\"" << _mountPoint << "\"" << Logger::endl(), 0);
-  return (Logger::get() << Logger::CRITICAL << "Unable to create MountPoint " << "\"" << _mountPoint << "\"" << Logger::endl(), -1);
+    return (Logger::get() << Logger::SUCCESS << "Successfully created MountPoint" << Logger::endl(), 0);
+  return (Logger::get() << Logger::CRITICAL << "Unable to create MountPoint" << Logger::endl(), -1);
 }
 
-void          Container::generatePaths(const string &user) {
+int          Container::makeLoop() {
+  return (0);
+}
+
+int          Container::generatePaths(const string &user) {
+  char       buffer[15];
+  int   		 nb;
+  int        fd;
+
+  if ((fd = ::open("/dev/loop-control", O_RDONLY)) == -1)
+    return (Logger::get() << Logger::CRITICAL << "Unable to find free loop device" << Logger::endl(), -1);
+    if ((nb = ioctl(fd, LOOP_CTL_GET_FREE)) < 0) {
+      ::close(fd);
+      return (Logger::get() << Logger::CRITICAL << "Unable to find free loop device" << Logger::endl(), -1);
+    }
+  ::close(fd);
+  memset(buffer, 0, sizeof(buffer));
+  snprintf(buffer, 15, "%s%d", "/dev/loop", nb);
+  _container = string(buffer);
   _user = user;
   _mountPoint = "/home/" + _user + "/Secret";
-  _container = "/dev/";
   Logger::get() << Logger::DEBUG << "MountPoint : " << "\"" << _mountPoint << "\"" << Logger::endl();
   Logger::get() << Logger::DEBUG << "Container : " << "\"" << _container << "\"" << Logger::endl();
+  return (0);
 }
 
 int           Container::mountIt() {
@@ -50,15 +69,15 @@ int           Container::mountIt() {
 }
 
 int           Container::open(const string &user) {
-  generatePaths(user);
-  if (makeDir() == -1 || mountIt() == -1)
-    return (-1);
-  return (0);
+  return (generatePaths(user) == -1 || makeDir() == -1 || mountIt() == -1 ? -1 : 0);
 }
 
 int           Container::close(const string &user) {
-  generatePaths(user);
-  if (umount(_mountPoint.c_str()) == -1 || rmdir(_mountPoint.c_str()) == -1)
+  if (generatePaths(user) == -1)
     return (-1);
+  if (umount(_mountPoint.c_str()) == -1)
+    return (Logger::get() << Logger::CRITICAL << "Unable to unmount container" << Logger::endl(), -1);
+  if (rmdir(_mountPoint.c_str()) == -1)
+    return (Logger::get() << Logger::WARN << "Unable to delete directory" << Logger::endl(), -1);
   return (0);
 }

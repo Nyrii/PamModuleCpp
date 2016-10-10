@@ -16,8 +16,6 @@
 
 using namespace std;
 
-int   mkdir(const char *, mode_t);
-
 class Container {
 public:
   Container();
@@ -30,7 +28,8 @@ private:
 
   int       mountIt();
   int       makeDir();
-  void      generatePaths(const string &);
+  int       makeLoop();
+  int       generatePaths(const string &);
 
   string    _mountPoint;
   string    _container;
