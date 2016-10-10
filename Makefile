@@ -8,6 +8,7 @@
 ## Last update Sat Oct  8 16:17:48 2016 Nyrandone Noboud-Inpeng
 ##
 
+SRC	+= Container.cpp
 SRC	+= Crypt.cpp
 SRC	+= Logger.cpp
 SRC	+= Pamela.cpp

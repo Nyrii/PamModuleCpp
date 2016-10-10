@@ -5,12 +5,13 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Tue Oct 04 13:25:41 2016 wilmot_g
-** Last update Wed Oct 05 19:46:21 2016 wilmot_g
+** Last update Mon Oct 10 15:43:34 2016 wilmot_g
 */
 
 #include <security/pam_appl.h>
 #include <security/pam_modules.h>
 #include <string>
+#include "Container.hpp"
 
 using namespace std;
 
@@ -23,9 +24,9 @@ public:
 
 private:
     string      _username;
-    string      _container;
-    string      _volume;
-    string      _loopdevice;
-    string      _keyfile;
+    Container   _container;
+    // string      _volume;
+    // string      _loopdevice;
+    // string      _keyfile;
     // t_mntinfo	  mountinfo;
 };

@@ -11,8 +11,31 @@
 #ifndef CONTAINER_HPP_
 # define CONTAINER_HPP_
 
-class Container {
+# include <sys/types.h>
+# include <string>
 
+using namespace std;
+
+int   mkdir(const char *, mode_t);
+
+class Container {
+public:
+  Container();
+  ~Container();
+
+  int     open(const string &user);
+  int     close(const string &user);
+
+private:
+
+  int       mountIt();
+  int       makeDir();
+  void      generatePaths(const string &);
+
+  string    _mountPoint;
+  string    _container;
+  string    _fileSystem;
+  string    _user;
 };
 
 #endif /* !CONTAINER_HPP_ */
