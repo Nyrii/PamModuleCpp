@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Sat Oct  8 15:48:30 2016 Nyrandone Noboud-Inpeng
-// Last update Mon Oct 10 22:40:25 2016 Nyrandone Noboud-Inpeng
+// Last update Tue Oct 11 11:01:42 2016 Nyrandone Noboud-Inpeng
 //
 
 #ifndef CRYPT_HPP_
@@ -52,7 +52,7 @@ class Crypt {
     int             RSAEncrypt();
     int             RSADecrypt();
     int             AESEncrypt(const std::string &);
-    int             AESDecrypt(const std::string &, unsigned char *, int);
+    int             AESDecrypt(const std::string &);
     int             getFileContentSize(const std::string &);
 
   private:
