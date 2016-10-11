@@ -4,71 +4,39 @@
 // Made by Nyrandone Noboud-Inpeng
 // Login   <noboud_n@epitech.eu>
 //
-// Started on  Sat Oct  8 15:48:30 2016 Nyrandone Noboud-Inpeng
-// Last update Tue Oct 11 11:01:42 2016 Nyrandone Noboud-Inpeng
+// Started on  Tue Oct 11 15:38:09 2016 Nyrandone Noboud-Inpeng
+// Last update Tue Oct 11 17:22:20 2016 Nyrandone Noboud-Inpeng
 //
 
 #ifndef CRYPT_HPP_
 # define CRYPT_HPP_
 
-# include <openssl/sha.h>
-# include <openssl/evp.h>
 # include <iostream>
-# include "Pamela.hh"
+# include <fstream>
+# include "ICrypt.hpp"
 
-# define RSA_KEYLEN 2048
-# define AES_KEYLEN 256
-# define AES_ITERATOR 10
+using namespace std;
 
-class Crypt {
+class Crypt : ICrypt{
 
   public:
-    Crypt() {
-      _localKeypair = NULL;
-      _remotePubKey = NULL;
+    virtual               ~Crypt() {};
 
-      _rsaEncryptCtx = NULL;
-      _aesEncryptCtx = NULL;
+    virtual int           init() = 0;
+    virtual int           encrypt(const string &) = 0;
+    virtual int           decrypt(const string &, int const) = 0;
 
-      _rsaDecryptCtx = NULL;
-      _aesDecryptCtx = NULL;
+  protected:
+    int                   getFileContentSize(const string &file) {
+      std::ifstream       ifs;
+      int                 size;
 
-      _aesKey = NULL;
-      _aesIV = NULL;
-      _aesPass = NULL;
-      _aesSalt = NULL;
+      ifs.open(file.c_str(), ifstream::in | ifstream::ate | ifstream::binary);
+      ifs.seekg(0, ifs.end);
+      size = ifs.tellg();
+      ifs.close();
+      return (size);
     };
-
-    ~Crypt() {
-      _rsaEncryptCtx != NULL ? EVP_CIPHER_CTX_cleanup(_rsaEncryptCtx) : 0;
-      _aesEncryptCtx != NULL ? EVP_CIPHER_CTX_cleanup(_aesEncryptCtx) : 0;
-      _rsaDecryptCtx != NULL ? EVP_CIPHER_CTX_cleanup(_rsaDecryptCtx) : 0;
-      _aesDecryptCtx != NULL ? EVP_CIPHER_CTX_cleanup(_aesEncryptCtx) : 0;
-    };
-
-    int             init();
-    int             generateRSAKey();
-    int             generateAESKeyAndIV();
-    int             RSAEncrypt();
-    int             RSADecrypt();
-    int             AESEncrypt(const std::string &);
-    int             AESDecrypt(const std::string &);
-    int             getFileContentSize(const std::string &);
-
-  private:
-    EVP_PKEY        *_localKeypair;
-    EVP_PKEY        *_remotePubKey;
-
-    EVP_CIPHER_CTX  *_rsaEncryptCtx;
-    EVP_CIPHER_CTX  *_aesEncryptCtx;
-
-    EVP_CIPHER_CTX  *_rsaDecryptCtx;
-    EVP_CIPHER_CTX  *_aesDecryptCtx;
-
-    unsigned char   *_aesKey;
-    unsigned char   *_aesIV;
-    unsigned char   *_aesPass;
-    unsigned char   *_aesSalt;
 };
 
 #endif /* !CRYPT_HPP_ */

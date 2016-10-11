@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Tue Oct  4 15:26:05 2016 Nyrandone Noboud-Inpeng
-// Last update Sat Oct  8 15:49:54 2016 Nyrandone Noboud-Inpeng
+// Last update Tue Oct 11 16:31:22 2016 Nyrandone Noboud-Inpeng
 //
 
 #ifndef ERRORS_HPP_
@@ -40,6 +40,13 @@ class			CryptError : public Error
 public:
   CryptError(std::string const &message = "An error occured.") { _message = message; };
   virtual		~CryptError() throw() {};
+};
+
+class			CommonError : public Error
+{
+public:
+  CommonError(std::string const &message = "An error occured.") { _message = message; };
+  virtual		~CommonError() throw() {};
 };
 
 #endif /* ERRORS_HPP_ */

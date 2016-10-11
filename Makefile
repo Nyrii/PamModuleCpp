@@ -5,11 +5,11 @@
 ## Login   <noboud_n@epitech.net>
 ##
 ## Started on  Mon Oct 12 17:58:00 2016 Nyrandone Noboud-Inpeng
-## Last update Sat Oct  8 16:17:48 2016 Nyrandone Noboud-Inpeng
+## Last update Tue Oct 11 18:05:25 2016 Nyrandone Noboud-Inpeng
 ##
 
 SRC	+= Container.cpp
-SRC	+= Crypt.cpp
+SRC	+= AESCrypt.cpp
 SRC	+= Pamela.cpp
 SRC	+= Session.cpp
 
@@ -31,7 +31,7 @@ INCDIR	= -I inc/
 
 MAKEOBJ	= obj
 
-LDFLAGS		+= -lpam -ldl -lcrypto
+LDFLAGS		+= -lpam -ldl -lcrypto++
 CXXFLAGS	+= -W -Wall -Wextra -Werror -fpic -rdynamic -ansi -D_POSIX_SOURCE
 
 all:
