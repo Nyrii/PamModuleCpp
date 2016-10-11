@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Wed Oct 05 16:20:49 2016 wilmot_g
-** Last update Wed Oct 05 18:04:15 2016 wilmot_g
+** Last update Tue Oct 11 13:58:25 2016 wilmot_g
 */
 
 #ifndef LOGGER_HPP
@@ -29,17 +29,21 @@ public:
         SUCCESS
       };
 
-    Logger                &operator<<(const string &s) {log(s); return (*this);}
-    Logger                &operator<<(int i) {log(i); return (*this);}
+    template<typename T>
+    Logger                &operator<<(const T &s) {if (!_silent) cerr << s; return (*this);}
     Logger                &operator<<(Priority p) {prioritize(p); return (*this);}
-    void                  log(const string &);
-    void                  log(int);
-    void                  prioritize(Logger::Priority);
-    void                  silence(bool);
+    void                  prioritize(Logger::Priority p) {*this << (_prefix[p]);}
+    void                  silence(bool s) {_silent = s;}
 
 private:
 
-    Logger();
+    Logger() {
+      _silent = false;
+      _prefix[Logger::DEBUG] = string("[") + "\033[01;35m" + "DEBUG" + "\033[0m" + "] ";
+      _prefix[Logger::WARN] = string("[") + "\033[01;33m" + "WARN" + "\033[0m" + "] ";
+      _prefix[Logger::CRITICAL] = string("[") + "\033[01;31m" + "CRITICAL" + "\033[0m" + "] ";
+      _prefix[Logger::SUCCESS] = string("[") + "\033[01;32m" + "SUCCESS" + "\033[0m" + "] ";
+    }
     Logger(const Logger &);
 
     void operator=(const Logger &);

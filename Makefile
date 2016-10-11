@@ -10,7 +10,6 @@
 
 SRC	+= Container.cpp
 SRC	+= Crypt.cpp
-SRC	+= Logger.cpp
 SRC	+= Pamela.cpp
 SRC	+= Session.cpp
 

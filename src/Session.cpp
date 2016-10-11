@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Tue Oct 04 13:40:45 2016 wilmot_g
-** Last update Mon Oct 10 18:33:00 2016 wilmot_g
+** Last update Tue Oct 11 10:29:29 2016 wilmot_g
 */
 
 #include <iostream>
@@ -21,7 +21,6 @@ int   Session::init(pam_handle_t *pamh) {
   if (pam_get_user(pamh, &username, NULL) == -1)
     return (Logger::get() << Logger::CRITICAL << "Can't get username" << Logger::endl(), -1);
   _username = username;
-  Logger::get() << Logger::DEBUG << "Username : " << _username << Logger::endl();
   _container.open(_username);
   return (0);
 }
