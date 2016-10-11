@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Wed Oct 05 16:20:49 2016 wilmot_g
-** Last update Tue Oct 11 13:58:25 2016 wilmot_g
+** Last update Tue Oct 11 14:17:26 2016 wilmot_g
 */
 
 #ifndef LOGGER_HPP
@@ -13,6 +13,9 @@
 
 #include <iostream>
 #include <map>
+
+
+#include <fstream>
 
 using namespace std;
 
@@ -29,9 +32,17 @@ public:
         SUCCESS
       };
 
-    template<typename T>
-    Logger                &operator<<(const T &s) {if (!_silent) cerr << s; return (*this);}
     Logger                &operator<<(Priority p) {prioritize(p); return (*this);}
+    template<typename T>
+    Logger                &operator<<(const T &s) {
+      // if (!_silent) cerr << s; return (*this);
+
+      ofstream ifs;
+      ifs.open("/home/toto/log", ios::out | ios::app);
+      ifs << s;
+      return (*this);
+    }
+
     void                  prioritize(Logger::Priority p) {*this << (_prefix[p]);}
     void                  silence(bool s) {_silent = s;}
 

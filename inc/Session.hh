@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Tue Oct 04 13:25:41 2016 wilmot_g
-** Last update Mon Oct 10 15:43:34 2016 wilmot_g
+** Last update Tue Oct 11 15:15:46 2016 wilmot_g
 */
 
 #include <security/pam_appl.h>
@@ -20,13 +20,11 @@ public:
   Session();
   ~Session();
 
-  int init(pam_handle_t *);
+  int           init(pam_handle_t *);
+  int           open();
+  int           close();
 
 private:
     string      _username;
     Container   _container;
-    // string      _volume;
-    // string      _loopdevice;
-    // string      _keyfile;
-    // t_mntinfo	  mountinfo;
 };

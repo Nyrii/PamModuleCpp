@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Mon Oct 03 21:19:49 2016 wilmot_g
-** Last update Mon Oct 10 17:02:47 2016 wilmot_g
+** Last update Tue Oct 11 15:01:09 2016 wilmot_g
 */
 
 #include <iostream>
@@ -36,7 +36,7 @@ PAM_EXTERN int		pam_sm_open_session(pam_handle_t *pamh, int flags, int ac, const
     return (Logger::get() << Logger::CRITICAL << "Pam handle is NULL" << Logger::endl(), PAM_SESSION_ERR);
 
   Session session;
-  if (session.init(pamh) == -1)
+  if (session.init(pamh) == -1 || session.open() == -1)
     return (PAM_SESSION_ERR);
   return (PAM_SUCCESS);
 }
@@ -48,9 +48,8 @@ PAM_EXTERN int		pam_sm_close_session(pam_handle_t *pamh, int flags, int ac, cons
   if (!pamh)
     return (Logger::get() << Logger::CRITICAL << "Pam handle is NULL" << Logger::endl(), PAM_SESSION_ERR);
 
-  (void)pamh;
-  (void)flags;
-  (void)ac;
-  (void)av;
+  Session session;
+  if (session.init(pamh) == -1 || session.close() == -1)
+    return (PAM_SESSION_ERR);
   return (PAM_SUCCESS);
 }

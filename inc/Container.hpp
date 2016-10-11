@@ -37,6 +37,7 @@ private:
   int     attachLoop();
   int     detachLoop();
   int     generatePaths(const string &);
+  int     findLoopDevice();
 
   string  _mountPoint;
   string  _loopDevice;

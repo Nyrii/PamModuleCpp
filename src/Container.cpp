@@ -18,6 +18,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <errno.h>
 #include "Container.hpp"
 #include "Logger.hpp"
 
@@ -70,11 +71,11 @@ int          Container::detachLoop() {
   int		     fd;
 
   if ((fd = ::open(_loopDevice.c_str(), O_RDWR)) == -1)
-    return (Logger::get() << Logger::WARN << "Unable to detach loop device" << Logger::endl(), -1);
+    return (Logger::get() << Logger::WARN << "Unable to open loop device" << Logger::endl(), -1);
   if (ioctl(fd, LOOP_CLR_FD) < 0)
-    return (::close(fd), Logger::get() << Logger::WARN << "Unable to detach loop device" << Logger::endl(), -1);
+    return (::close(fd), Logger::get() << Logger::WARN << "Unable to detach loop device : " << strerror(errno) << Logger::endl(), -1);
   ::close(fd);
-  return (0);
+  return (Logger::get() << Logger::SUCCESS << "loopDevice detached" << Logger::endl(), 0);
 }
 
 int          Container::generatePaths(const string &user) {
@@ -114,14 +115,44 @@ int           Container::open(const string &user) {
   return (generatePaths(user) == -1 || makeMountPoint() == -1 || attachLoop() == -1 || mount() == -1 ? -1 : 0);
 }
 
+int           Container::findLoopDevice() {
+  char        buffer[15];
+  int   		  i;
+  int         fd;
+  struct loop_info64  info;
+
+  for (i = 0; ; i++) {
+    memset(buffer, 0, sizeof(buffer));
+    snprintf(buffer, 15, "%s%d", "/dev/loop", i);
+    if ((fd = ::open(buffer, O_RDONLY)) == -1 && i >= 10)
+      return (Logger::get() << Logger::WARN << "Unable to find the device" << Logger::endl(), 0);
+    if (fd != -1) {
+      if (ioctl(fd, LOOP_GET_STATUS64, &info) == 0)
+        if (string((char *)info.lo_file_name) == _container) {
+          memset(buffer, 0, sizeof(buffer));
+          snprintf(buffer, 15, "%s%d", "/dev/loop", i);
+          _loopDevice = string(buffer);
+          ::close(fd);
+          return (0);
+        }
+        ::close(fd);
+    }
+  }
+  return (Logger::get() << Logger::WARN << "Unable to find the device" << Logger::endl(), 0);
+}
+
 int           Container::close(const string &user) {
-  if (generatePaths(user) == -1)
+  if (generatePaths(user) == -1 || findLoopDevice() == -1)
     return (-1);
-  if (umount(_mountPoint.c_str()) == -1)
-    return (Logger::get() << Logger::CRITICAL << "Unable to unmount container" << Logger::endl(), -1);
-  if (rmdir(_mountPoint.c_str()) == -1)
-    return (Logger::get() << Logger::WARN << "Unable to delete directory" << Logger::endl(), -1);
-  if (detachLoop() == -1)
-    return (-1);
-  return (0);
+  if (access(_mountPoint.c_str(), R_OK) != 0)
+    Logger::get() << Logger::WARN << "MountPoint already deleted" << Logger::endl();
+  else {
+    if (umount2(_mountPoint.c_str(), MNT_FORCE) == -1)
+      return (Logger::get() << Logger::CRITICAL << "Unable to unmount container" << Logger::endl(), -1);
+    Logger::get() << Logger::SUCCESS << "Container unmounted" << Logger::endl();
+    rmdir(_mountPoint.c_str()) == -1 ?
+      Logger::get() << Logger::WARN << "Unable to delete directory" << Logger::endl() :
+      Logger::get() << Logger::SUCCESS << "MountPoint deleted" << Logger::endl();
+  }
+  return (detachLoop() == -1);
 }
