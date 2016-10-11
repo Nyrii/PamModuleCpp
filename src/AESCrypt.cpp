@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Tue Oct 11 15:28:50 2016 Nyrandone Noboud-Inpeng
-// Last update Tue Oct 11 18:03:11 2016 Nyrandone Noboud-Inpeng
+// Last update Tue Oct 11 21:42:02 2016 Nyrandone Noboud-Inpeng
 //
 
 #include <crypto++/filters.h>
@@ -49,7 +49,6 @@ int                   AESCrypt::encrypt(const string &file) {
     } catch (CryptoPP::Exception &e) {
       cerr << e.what() << endl;
     }
-    cout << buffer << endl;
     tmp.open("crypt.txt");
     tmp << buffer;
     tmp.close();
@@ -59,13 +58,16 @@ int                   AESCrypt::encrypt(const string &file) {
   return (0);
 }
 
-int                   AESCrypt::decrypt(const string &file, int const previousSize) {
+int                   AESCrypt::decrypt(UNUSED const string &file, UNUSED int const previousSize) {
   unsigned char       *buffer;
+  unsigned char       *decryptedData;
   ifstream            ifs;
   struct stat         info;
   ofstream            tmp;
 
-  if (!(buffer = new unsigned char[previousSize + 4096])) {
+  if (!(buffer = new unsigned char[previousSize + 1])
+      || !(decryptedData = new unsigned char[previousSize + 1])
+      || !memset(decryptedData, 0, previousSize + 1)) {
     throw MemoryAllocError("Error : could not allocate memory.");
   }
   if (stat(file.c_str(), &info) == -1) {
@@ -76,18 +78,20 @@ int                   AESCrypt::decrypt(const string &file, int const previousSi
   if (ifs.read(reinterpret_cast<char *>(buffer), info.st_size)) {
     try {
       CFB_Mode<AES>::Decryption cfbDecryption(_aesKey, _aesKey.size(), _aesIV);
-      cfbDecryption.ProcessData(buffer, buffer, previousSize);
+      cfbDecryption.ProcessData(decryptedData, buffer, previousSize);
+      decryptedData[previousSize] = '\0';
     } catch (CryptoPP::Exception &e) {
       cerr << e.what() << endl;
       return (-1);
     }
     tmp.open("decrypt.txt");
-    tmp << buffer;
+    tmp << decryptedData;
     tmp.close();
   } else {
     throw CommonError("Error : could not access " + file);
   }
   ifs.close();
   delete[] buffer;
+  delete[] decryptedData;
   return (0);
 }
