@@ -32,10 +32,10 @@ public:
 
 private:
 
-  int     mount();
-  int     makeMountPoint();
-  int     attachLoop();
-  int     detachLoop();
+  int     mount() const;
+  int     makeMountPoint() const;
+  int     attachLoop() const;
+  int     detachLoop() const;
   int     generatePaths(const string &);
   int     findLoopDevice();
 

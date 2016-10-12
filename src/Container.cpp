@@ -34,7 +34,7 @@ ostream       &operator<<(ostream &os, const Container &c) {
   return (os);
 }
 
-int           Container::makeMountPoint() {
+int           Container::makeMountPoint() const {
   if (access(_mountPoint.c_str(), R_OK) == 0)
     return (Logger::get() << Logger::SUCCESS << "MountPoint already exists" << Logger::endl(), 0);
   if (mkdir(_mountPoint.c_str(), (S_IRWXU | S_IXGRP | S_IXOTH)) == 0)
@@ -42,7 +42,7 @@ int           Container::makeMountPoint() {
   return (Logger::get() << Logger::CRITICAL << "Unable to create MountPoint" << Logger::endl(), -1);
 }
 
-int          Container::attachLoop() {
+int          Container::attachLoop() const {
   int        fdContainer;
   int			   fd;
   int        ret;
@@ -67,7 +67,7 @@ int          Container::attachLoop() {
   return (Logger::get() << Logger::SUCCESS << "loopDevice infos updated" << Logger::endl(), 0);
 }
 
-int          Container::detachLoop() {
+int          Container::detachLoop() const {
   int		     fd;
 
   if ((fd = ::open(_loopDevice.c_str(), O_RDWR)) == -1)
@@ -99,7 +99,7 @@ int          Container::generatePaths(const string &user) {
   return (0);
 }
 
-int           Container::mount() {
+int           Container::mount() const {
   if (::mount(_loopDevice.c_str(), _mountPoint.c_str(), _fileSystem.c_str(), 0, NULL) != 0)
     return (Logger::get() << Logger::CRITICAL << "Unable to mount the container" << Logger::endl(), -1);
   Logger::get() << Logger::SUCCESS << "Container mounted" << Logger::endl();

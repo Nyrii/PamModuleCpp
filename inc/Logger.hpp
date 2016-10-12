@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Wed Oct 05 16:20:49 2016 wilmot_g
-** Last update Tue Oct 11 17:40:22 2016 wilmot_g
+** Last update Wed Oct 12 14:12:39 2016 wilmot_g
 */
 
 #ifndef LOGGER_HPP
