@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Tue Oct 11 15:27:08 2016 Nyrandone Noboud-Inpeng
-// Last update Wed Oct 12 14:27:28 2016 Nyrandone Noboud-Inpeng
+// Last update Wed Oct 12 15:19:16 2016 Nyrandone Noboud-Inpeng
 //
 
 #ifndef AESCRYPT_HPP_
@@ -20,6 +20,8 @@
 
 # define  AES_KEYLEN  32
 # define  DL_BYTES    100000
+# define  KEY_FILE    ".aeskey"
+# define  IV_FILE     ".aesIV"
 
 using namespace CryptoPP;
 using namespace std;
@@ -35,6 +37,7 @@ class AESCrypt : Crypt {
     int                   init();
     int                   encrypt(const string &file);
     int                   decrypt(const string &file, const string &, int const);
+    int                   readKeys();
 
     AutoSeededRandomPool  _randomGenerator;
     SecByteBlock          _aesKey, _aesIV;
