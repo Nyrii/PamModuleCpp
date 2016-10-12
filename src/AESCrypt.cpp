@@ -5,11 +5,13 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Tue Oct 11 15:28:50 2016 Nyrandone Noboud-Inpeng
-// Last update Tue Oct 11 21:42:02 2016 Nyrandone Noboud-Inpeng
+// Last update Wed Oct 12 14:34:22 2016 Nyrandone Noboud-Inpeng
 //
 
 #include <crypto++/filters.h>
 #include <crypto++/modes.h>
+#include <crypto++/eax.h>
+#include <crypto++/files.h>
 #include <fstream>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -19,8 +21,10 @@
 
 int                   AESCrypt::init() {
   try {
+    _aesKey.New(AES_KEYLEN);
+    _aesIV.New(AES_KEYLEN);
     _randomGenerator.GenerateBlock(_aesKey, _aesKey.size());
-    _randomGenerator.GenerateBlock(_aesIV, AES::BLOCKSIZE);
+    _randomGenerator.GenerateBlock(_aesIV, _aesIV.size());
   } catch (CryptoPP::Exception &e) {
     cerr << e.what() << endl;
     return (-1);
@@ -28,70 +32,62 @@ int                   AESCrypt::init() {
   return (0);
 }
 
-int                   AESCrypt::encrypt(const string &file) {
-  unsigned char       *buffer;
-  int                 fileSize;
-  ifstream            ifs;
-  ofstream            tmp;
+int                     AESCrypt::encrypt(const string &file) {
+  EAX<AES>::Encryption  encryption;
+  string                encryptedFile = "crypt.txt";
 
-  if ((fileSize = getFileContentSize(file)) == -1) {
-    throw CommonError("Error : " + file + " is actually empty : the encryption is impossible.");
+  try {
+    encryption.SetKeyWithIV(_aesKey, _aesKey.size(), _aesIV);
+    FileSource fs1(file.c_str(), true,
+                    new AuthenticatedEncryptionFilter(encryption,
+                                                      new FileSink(encryptedFile.c_str())));
+  } catch (Exception &e) {
+    std::cerr << e.what() << std::endl;
+    return (-1);
   }
-  if (!(buffer = new unsigned char[fileSize + 1]) || !memset(buffer, 0, fileSize + 1)) {
-    throw MemoryAllocError("Error : could not allocate memory.");
-  }
-  ifs.open(file.c_str(), ifstream::in | ifstream::ate | ifstream::binary);
-  ifs.seekg(0, ios::beg);
-  if (ifs.read(reinterpret_cast<char *>(buffer), fileSize)) {
-    try {
-      CFB_Mode<AES>::Encryption cfbEncryption(_aesKey, _aesKey.size(), _aesIV);
-      cfbEncryption.ProcessData(buffer, buffer, fileSize);
-    } catch (CryptoPP::Exception &e) {
-      cerr << e.what() << endl;
-    }
-    tmp.open("crypt.txt");
-    tmp << buffer;
-    tmp.close();
-  }
-  ifs.close();
-  delete[] buffer;
   return (0);
 }
 
-int                   AESCrypt::decrypt(UNUSED const string &file, UNUSED int const previousSize) {
-  unsigned char       *buffer;
-  unsigned char       *decryptedData;
-  ifstream            ifs;
-  struct stat         info;
-  ofstream            tmp;
+int                     AESCrypt::decrypt(const string &fileToDecryptName, const string &finalFileName,
+                                          int const previousSize) {
+  EAX<AES>::Decryption  decryption;
+  ofstream              finalFile;
+  ifstream              tmpFile;
+  std::vector<char>     buffer(DL_BYTES);
+  int                   bytesDownloaded = 0;
 
-  if (!(buffer = new unsigned char[previousSize + 1])
-      || !(decryptedData = new unsigned char[previousSize + 1])
-      || !memset(decryptedData, 0, previousSize + 1)) {
-    throw MemoryAllocError("Error : could not allocate memory.");
+  try {
+    decryption.SetKeyWithIV(_aesKey, _aesKey.size(), _aesIV);
+    FileSource fs1(fileToDecryptName.c_str(), true,
+                  new AuthenticatedEncryptionFilter(decryption, new FileSink("tmp")));
+  } catch (Exception &e) {
+    std::cerr << e.what() << std::endl;
+    return (-1);
   }
-  if (stat(file.c_str(), &info) == -1) {
-    throw CommonError("Error: could not get the information of " + file);
-  }
-  ifs.open(file.c_str(), ifstream::in | ifstream::ate | ifstream::binary);
-  ifs.seekg(0, ios::beg);
-  if (ifs.read(reinterpret_cast<char *>(buffer), info.st_size)) {
-    try {
-      CFB_Mode<AES>::Decryption cfbDecryption(_aesKey, _aesKey.size(), _aesIV);
-      cfbDecryption.ProcessData(decryptedData, buffer, previousSize);
-      decryptedData[previousSize] = '\0';
-    } catch (CryptoPP::Exception &e) {
-      cerr << e.what() << endl;
-      return (-1);
+  finalFile.open(finalFileName.c_str());
+  tmpFile.open("tmp");
+  tmpFile.seekg(0, std::ios::beg);
+  if (tmpFile.is_open()) {
+    while (tmpFile.read(buffer.data(), bytesDownloaded < previousSize - DL_BYTES ?
+                                        DL_BYTES : previousSize - bytesDownloaded)) {
+      if (finalFile.is_open()) {
+        finalFile.write(buffer.data(), bytesDownloaded < previousSize - DL_BYTES ?
+                                        DL_BYTES : previousSize - bytesDownloaded);
+      } else {
+        finalFile.close();
+        tmpFile.close();
+        throw CommonError("Error : the destination file cannot receive the decrypted content.");
+      }
+      bytesDownloaded += DL_BYTES;
     }
-    tmp.open("decrypt.txt");
-    tmp << decryptedData;
-    tmp.close();
   } else {
-    throw CommonError("Error : could not access " + file);
+    finalFile.close();
+    tmpFile.close();
+    throw CommonError("Error : decryption cannot be done due to an unexisting or empty file.");
   }
-  ifs.close();
-  delete[] buffer;
-  delete[] decryptedData;
+  finalFile.close();
+  tmpFile.close();
+  remove("tmp");
+  remove("crypt.txt");
   return (0);
 }

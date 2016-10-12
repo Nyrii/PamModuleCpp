@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Tue Oct 11 15:38:09 2016 Nyrandone Noboud-Inpeng
-// Last update Tue Oct 11 17:22:20 2016 Nyrandone Noboud-Inpeng
+// Last update Wed Oct 12 13:02:58 2016 Nyrandone Noboud-Inpeng
 //
 
 #ifndef CRYPT_HPP_
@@ -24,7 +24,7 @@ class Crypt : ICrypt{
 
     virtual int           init() = 0;
     virtual int           encrypt(const string &) = 0;
-    virtual int           decrypt(const string &, int const) = 0;
+    virtual int           decrypt(const string &, const string &, int const) = 0;
 
   protected:
     int                   getFileContentSize(const string &file) {
