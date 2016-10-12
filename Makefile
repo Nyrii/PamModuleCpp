@@ -20,7 +20,11 @@ OBJMAIN	= $(addprefix $(OBJDIR), $(MAIN:.cpp=.o))
 
 RM	= rm -f
 
+<<<<<<< HEAD
 CXX	= g++ -std=c++11 -g -O3
+=======
+CXX	= g++ -std=c++11 -O3
+>>>>>>> b446a30e78a01200bfa849f75b291b7b4b1316c0
 
 NAME	= pam_ela.so
 TEST	= pamtest
