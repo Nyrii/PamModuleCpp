@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Tue Oct 04 14:08:06 2016 wilmot_g
-** Last update Wed Oct 12 17:44:58 2016 Nyrandone Noboud-Inpeng
+** Last update Wed Oct 12 18:42:43 2016 Nyrandone Noboud-Inpeng
 */
 
 #include <security/pam_appl.h>
@@ -49,12 +49,10 @@ int			main(UNUSED int ac, UNUSED char **av) {
   // Crypt crypter;
 
   AESCrypt crypt;
-  struct stat buf;
 
-  stat(av[1], &buf);
-  // crypt.init();
-  // crypt.encrypt(av[1]);
-  crypt.readKeys();
-  crypt.decrypt("crypt.txt", "panda.jpg", buf.st_size);
+  crypt.init();
+  crypt.encrypt(av[1]);
+  // crypt.readKeys();
+  crypt.decrypt("crypt.txt", "panda.jpg");
   return (0);
 }

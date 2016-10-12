@@ -5,7 +5,7 @@
 ## Login   <noboud_n@epitech.net>
 ##
 ## Started on  Mon Oct 12 17:58:00 2016 Nyrandone Noboud-Inpeng
-## Last update Wed Oct 12 14:42:23 2016 Nyrandone Noboud-Inpeng
+## Last update Wed Oct 12 18:54:42 2016 Nyrandone Noboud-Inpeng
 ##
 
 SRC	+= Container.cpp
@@ -20,11 +20,7 @@ OBJMAIN	= $(addprefix $(OBJDIR), $(MAIN:.cpp=.o))
 
 RM	= rm -f
 
-<<<<<<< HEAD
-CXX	= g++ -std=c++11 -g -O3
-=======
-CXX	= g++ -std=c++11 -O3
->>>>>>> b446a30e78a01200bfa849f75b291b7b4b1316c0
+CXX	= g++ -std=c++11 -O3 -g
 
 NAME	= pam_ela.so
 TEST	= pamtest
