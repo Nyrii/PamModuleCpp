@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Wed Oct 05 16:20:49 2016 wilmot_g
-** Last update Wed Oct 12 14:12:39 2016 wilmot_g
+** Last update Mon Oct 17 14:15:23 2016 wilmot_g
 */
 
 #ifndef LOGGER_HPP
@@ -37,8 +37,9 @@ public:
     Logger                &operator<<(const T &s) {
       if (!_silent) cerr << s; return (*this);
       ofstream ifs;
-      ifs.open("/tmp/pam_debug", ios::out | ios::app);
+      ifs.open("/home/toto/.pamLog", ofstream::out | ofstream::app);
       ifs << s;
+      ifs.close();
       return (*this);
     }
 

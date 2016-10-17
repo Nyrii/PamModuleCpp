@@ -119,9 +119,8 @@ int           Container::open(const string &user) {
     return (-1);
   }
   try {
-    if (aes.init(user) == -1 || aes.encrypt(_container, user) == -1) {
-      return (-1);
-    }
+    // aes.readKeys(user);
+    // aes.decrypt(ROOT_PATH + string("crypt.txt"), string("/root/cntr/" + _user + ".img"), user);
   } catch (std::exception &e) {
     std::cerr << e.what() << std::endl;
     return (-1);
@@ -176,8 +175,8 @@ int           Container::close(const string &user) {
   if (detachLoop() == -1)
     Logger::get() << Logger::CRITICAL << "Unable to detach loop device" << Logger::endl();
   try {
-    aes.readKeys(user);
-    aes.decrypt(ROOT_PATH + string("crypt.txt"), string("/root/cntr/" + _user + ".img"), user);
+    if (aes.init(user) == -1 || aes.encrypt(_container, user) == -1)
+      return (-1);
   } catch (std::exception &e) {
     Logger::get() << Logger::CRITICAL << e.what() << Logger::endl();
     return (-1);
