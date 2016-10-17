@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Tue Oct 11 15:28:50 2016 Nyrandone Noboud-Inpeng
-// Last update Mon Oct 17 13:42:30 2016 Nyrandone Noboud-Inpeng
+// Last update Mon Oct 17 14:44:35 2016 Nyrandone Noboud-Inpeng
 //
 
 #include <crypto++/filters.h>
@@ -45,7 +45,7 @@ int                                 AESCrypt::init(const string &user) {
 
 int                               AESCrypt::encrypt(const string &file, const string &user) {
   EAX<AES>::Encryption            encryption;
-  string                          encryptedFile(string(ROOT_PATH) + "crypt.txt");
+  string                          encryptedFile(string(ROOT_PATH) + file);
   string                          sizeFileName(ROOT_PATH + string(SIZE_FILE) + user);
   struct stat                     info;
   ofstream                        sizeFile;
@@ -75,7 +75,6 @@ int                               AESCrypt::encrypt(const string &file, const st
 }
 
 int                               AESCrypt::decrypt(const string &fileToDecryptName,
-                                                    const string &finalFileName,
                                                     const string &user) {
   EAX<AES>::Decryption            decryption;
   ofstream                        finalFile;
@@ -83,7 +82,6 @@ int                               AESCrypt::decrypt(const string &fileToDecryptN
   std::vector<unsigned char>      buffer(DL_BYTES + 1);
   int                             bytesDownloaded = 0;
   int                             previousSize;
-  string                          cryptFilePath(string(ROOT_PATH) + "crypt.txt");
   string                          tmpFilePath(string(ROOT_PATH) + "tmp");
 
   if ((previousSize = getFilePreviousSize(user)) == -1) {
@@ -97,7 +95,7 @@ int                               AESCrypt::decrypt(const string &fileToDecryptN
     std::cerr << e.what() << std::endl;
     return (-1);
   }
-  finalFile.open(finalFileName.c_str());
+  finalFile.open(fileToDecryptName.c_str());
   tmpFile.open(tmpFilePath.c_str());
   tmpFile.seekg(0, std::ios::beg);
   if (tmpFile.is_open()) {
@@ -121,7 +119,6 @@ int                               AESCrypt::decrypt(const string &fileToDecryptN
   finalFile.close();
   tmpFile.close();
   remove(tmpFilePath.c_str());
-  remove(cryptFilePath.c_str());
   return (0);
 }
 

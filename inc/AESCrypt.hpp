@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Tue Oct 11 15:27:08 2016 Nyrandone Noboud-Inpeng
-// Last update Mon Oct 17 13:32:12 2016 Nyrandone Noboud-Inpeng
+// Last update Mon Oct 17 14:44:03 2016 Nyrandone Noboud-Inpeng
 //
 
 #ifndef AESCRYPT_HPP_
@@ -37,7 +37,7 @@ class AESCrypt : Crypt {
 
     int                   init(const string &);
     int                   encrypt(const string &, const string &);
-    int                   decrypt(const string &, const string &, const string &);
+    int                   decrypt(const string &, const string &);
     int                   readKeys(const string &);
     int                   getFilePreviousSize(const string &);
 
