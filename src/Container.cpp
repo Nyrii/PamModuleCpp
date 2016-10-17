@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Tue Oct  4 14:59:30 2016 Nyrandone Noboud-Inpeng
-// Last update Sat Oct  8 15:49:14 2016 Nyrandone Noboud-Inpeng
+// Last update Mon Oct 17 13:52:32 2016 Nyrandone Noboud-Inpeng
 //
 
 #include <sys/stat.h>
@@ -21,6 +21,7 @@
 #include <errno.h>
 #include "Container.hpp"
 #include "Logger.hpp"
+#include "AESCrypt.hpp"
 
 Container::Container() {}
 Container::~Container() {}
@@ -112,7 +113,23 @@ int           Container::mount() const {
 }
 
 int           Container::open(const string &user) {
-  return (generatePaths(user) == -1 || makeMountPoint() == -1 || attachLoop() == -1 || mount() == -1 ? -1 : 0);
+  AESCrypt    aes;
+
+  if (generatePaths(user) == -1) {
+    return (-1);
+  }
+  try {
+    if (aes.init(user) == -1 || aes.encrypt(_container, user) == -1) {
+      return (-1);
+    }
+  } catch (std::exception &e) {
+    std::cerr << e.what() << std::endl;
+    return (-1);
+  }
+  if (makeMountPoint() == -1 || attachLoop() == -1 || mount() == -1) {
+    return (-1);
+  }
+  return (0);
 }
 
 int           Container::findLoopDevice() {
@@ -142,6 +159,8 @@ int           Container::findLoopDevice() {
 }
 
 int           Container::close(const string &user) {
+  AESCrypt    aes;
+
   if (generatePaths(user) == -1 || findLoopDevice() == -1)
     return (-1);
   if (access(_mountPoint.c_str(), R_OK) != 0)
@@ -154,5 +173,14 @@ int           Container::close(const string &user) {
       Logger::get() << Logger::WARN << "Unable to delete directory" << Logger::endl() :
       Logger::get() << Logger::SUCCESS << "MountPoint deleted" << Logger::endl();
   }
-  return (detachLoop() == -1);
+  if (detachLoop() == -1)
+    Logger::get() << Logger::CRITICAL << "Unable to detach loop device" << Logger::endl();
+  try {
+    aes.readKeys(user);
+    aes.decrypt(ROOT_PATH + string("crypt.txt"), string("/root/cntr/" + _user + ".img"), user);
+  } catch (std::exception &e) {
+    Logger::get() << Logger::CRITICAL << e.what() << Logger::endl();
+    return (-1);
+  }
+  return (0);
 }
