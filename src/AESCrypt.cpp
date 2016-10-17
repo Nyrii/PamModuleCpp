@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Tue Oct 11 15:28:50 2016 Nyrandone Noboud-Inpeng
-// Last update Mon Oct 17 15:02:47 2016 Nyrandone Noboud-Inpeng
+// Last update Mon Oct 17 15:38:05 2016 Nyrandone Noboud-Inpeng
 //
 
 #include <crypto++/filters.h>
@@ -27,6 +27,7 @@ int                                 AESCrypt::init(const string &user) {
   string                            tmpIV;
   string                            keyFileName(string(ROOT_PATH) + KEY_FILE + user);
   string                            IVFileName(string(ROOT_PATH) + IV_FILE + user);
+
   try {
     _aesKey.New(AES_KEYLEN);
     _aesIV.New(AES_KEYLEN);
@@ -45,7 +46,7 @@ int                                 AESCrypt::init(const string &user) {
 
 int                               AESCrypt::encrypt(const string &file, const string &user) {
   EAX<AES>::Encryption            encryption;
-  string                          encryptedFile(string(ROOT_PATH) + file);
+  string                          encryptedFile(string(ROOT_PATH) + "crypted" + file);
   string                          sizeFileName(ROOT_PATH + string(SIZE_FILE) + user);
   struct stat                     info;
   ofstream                        sizeFile;
@@ -67,6 +68,7 @@ int                               AESCrypt::encrypt(const string &file, const st
     FileSource encrypt(file.c_str(), true,
                       new AuthenticatedEncryptionFilter(encryption,
                                                         new FileSink(encryptedFile.c_str())));
+    remove(file.c_str());
   } catch (Exception &e) {
     std::cerr << e.what() << std::endl;
     return (-1);
@@ -95,7 +97,7 @@ int                               AESCrypt::decrypt(const string &fileToDecryptN
     std::cerr << e.what() << std::endl;
     return (-1);
   }
-  finalFile.open(fileToDecryptName.c_str());
+  finalFile.open(string(ROOT_PATH + user + ".img").c_str());
   tmpFile.open(tmpFilePath.c_str());
   tmpFile.seekg(0, std::ios::beg);
   if (tmpFile.is_open()) {
@@ -119,6 +121,7 @@ int                               AESCrypt::decrypt(const string &fileToDecryptN
   finalFile.close();
   tmpFile.close();
   remove(tmpFilePath.c_str());
+  remove(fileToDecryptName.c_str());
   return (0);
 }
 
@@ -137,10 +140,14 @@ int                               AESCrypt::readKeys(const string &user) {
   if (!aesKeyFile.is_open() || !aesIVFile.is_open()
       || !aesKeyFile.read(reinterpret_cast<char *>(keyBuffer.data()), _aesKey.size())
       || !aesIVFile.read(reinterpret_cast<char *>(IVBuffer.data()), _aesIV.size())) {
+    aesKeyFile.close();
+    aesIVFile.close();
     throw CommonError("Error : could not open the AES key or IV File.");
   }
   std::copy(keyBuffer.begin(), keyBuffer.end(), _aesKey.data());
   std::copy(IVBuffer.begin(), IVBuffer.end(), _aesIV.data());
+  aesKeyFile.close();
+  aesIVFile.close();
   return (0);
 }
 

@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Tue Oct 04 14:08:06 2016 wilmot_g
-** Last update Mon Oct 17 13:39:15 2016 Nyrandone Noboud-Inpeng
+** Last update Mon Oct 17 15:24:00 2016 Nyrandone Noboud-Inpeng
 */
 
 #include <security/pam_appl.h>
@@ -49,7 +49,7 @@ int			main(UNUSED int ac, UNUSED char **av) {
   // Crypt crypter;
 
   // AESCrypt crypt;
-
+  //
   // crypt.init("Jin");
   // crypt.encrypt(av[1], "Jin");
   // crypt.readKeys();

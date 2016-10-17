@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Tue Oct  4 14:59:30 2016 Nyrandone Noboud-Inpeng
-// Last update Mon Oct 17 14:45:03 2016 Nyrandone Noboud-Inpeng
+// Last update Mon Oct 17 15:35:37 2016 Nyrandone Noboud-Inpeng
 //
 
 #include <sys/stat.h>
@@ -120,7 +120,7 @@ int           Container::open(const string &user) {
   }
   try {
     // if (aes.readKeys(user) == -1
-    //     || aes.decrypt(string(ROOT_PATH + _user + ".img"), user) == -1)
+    //     || aes.decrypt(string(ROOT_PATH + "crypted" + _user + ".img"), user) == -1)
     //   return -1;
   } catch (std::exception &e) {
     std::cerr << e.what() << std::endl;
