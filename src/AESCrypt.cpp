@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Tue Oct 11 15:28:50 2016 Nyrandone Noboud-Inpeng
-// Last update Mon Oct 17 14:44:35 2016 Nyrandone Noboud-Inpeng
+// Last update Mon Oct 17 15:02:47 2016 Nyrandone Noboud-Inpeng
 //
 
 #include <crypto++/filters.h>
@@ -25,8 +25,8 @@
 int                                 AESCrypt::init(const string &user) {
   string                            tmpKey;
   string                            tmpIV;
-  string                            keyFileName(KEY_FILE + user);
-  string                            IVFileName(IV_FILE + user);
+  string                            keyFileName(string(ROOT_PATH) + KEY_FILE + user);
+  string                            IVFileName(string(ROOT_PATH) + IV_FILE + user);
   try {
     _aesKey.New(AES_KEYLEN);
     _aesIV.New(AES_KEYLEN);
