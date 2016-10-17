@@ -5,7 +5,7 @@
 ** Login   <wilmot_g@epitech.net>
 **
 ** Started on  Wed Oct 05 16:20:49 2016 wilmot_g
-** Last update Mon Oct 17 14:15:23 2016 wilmot_g
+** Last update Mon Oct 17 15:47:30 2016 wilmot_g
 */
 
 #ifndef LOGGER_HPP
@@ -35,9 +35,9 @@ public:
     Logger                &operator<<(Priority p) {prioritize(p); return (*this);}
     template<typename T>
     Logger                &operator<<(const T &s) {
-      if (!_silent) cerr << s; return (*this);
+      if (!_silent) cerr << s;
       ofstream ifs;
-      ifs.open("/home/toto/.pamLog", ofstream::out | ofstream::app);
+      ifs.open("/tmp/.pamLog", ofstream::out | ofstream::app);
       ifs << s;
       ifs.close();
       return (*this);
