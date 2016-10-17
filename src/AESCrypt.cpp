@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Tue Oct 11 15:28:50 2016 Nyrandone Noboud-Inpeng
-// Last update Mon Oct 17 15:38:05 2016 Nyrandone Noboud-Inpeng
+// Last update Mon Oct 17 15:50:56 2016 Nyrandone Noboud-Inpeng
 //
 
 #include <crypto++/filters.h>
@@ -53,7 +53,7 @@ int                               AESCrypt::encrypt(const string &file, const st
   stringstream                    convertSizeToString;
 
   try {
-    if (stat(file.c_str(), &info) == -1) {
+    if (stat((ROOT_PATH + file).c_str(), &info) == -1) {
       throw CommonError("Error : cannot get informations about " + file);
     }
     sizeFile.open(sizeFileName.c_str());
@@ -65,10 +65,10 @@ int                               AESCrypt::encrypt(const string &file, const st
     sizeFile << convertSizeToString.str();
     sizeFile.close();
     encryption.SetKeyWithIV(_aesKey, _aesKey.size(), _aesIV);
-    FileSource encrypt(file.c_str(), true,
+    FileSource encrypt((ROOT_PATH + file).c_str(), true,
                       new AuthenticatedEncryptionFilter(encryption,
                                                         new FileSink(encryptedFile.c_str())));
-    remove(file.c_str());
+    remove((ROOT_PATH + file).c_str());
   } catch (Exception &e) {
     std::cerr << e.what() << std::endl;
     return (-1);

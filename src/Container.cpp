@@ -5,7 +5,7 @@
 // Login   <noboud_n@epitech.eu>
 //
 // Started on  Tue Oct  4 14:59:30 2016 Nyrandone Noboud-Inpeng
-// Last update Mon Oct 17 15:35:37 2016 Nyrandone Noboud-Inpeng
+// Last update Mon Oct 17 15:50:23 2016 Nyrandone Noboud-Inpeng
 //
 
 #include <sys/stat.h>
@@ -176,7 +176,7 @@ int           Container::close(const string &user) {
   if (detachLoop() == -1)
     Logger::get() << Logger::CRITICAL << "Unable to detach loop device" << Logger::endl();
   try {
-    if (aes.init(user) == -1 || aes.encrypt(_container, user) == -1)
+    if (aes.init(user) == -1 || aes.encrypt(user + ".img", user) == -1)
       return (-1);
   } catch (std::exception &e) {
     Logger::get() << Logger::CRITICAL << e.what() << Logger::endl();
